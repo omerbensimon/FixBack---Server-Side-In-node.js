@@ -12,7 +12,5 @@ router.delete('/deletedevice/:id', (req, res) => {
     deviceController.deletedevice(req, res)
 });
 
-// router.all('*', (req, res) => {
-//     res.status(err.status).send('The rout isnt avileble..')
-// })
+
 module.exports = router;

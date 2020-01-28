@@ -61,7 +61,7 @@ const updateTask = async (req, res) => {
             };
         }
         await Task.updateOne({ _id: req.params.taskId }, tempObj);
-        logger.log(`Task was updeted successfully by ${userObj[0].name} the ${userObj[0].Role}!`);
+        logger.log(`Task was updated successfully by ${userObj[0].name} the ${userObj[0].Role}!`);
         res.status(httpStatus.OK).send('Task was updated successfully!')
     } catch (err) {
         res.status(err.status).send(err.message);
@@ -69,19 +69,17 @@ const updateTask = async (req, res) => {
 }
 const viewAllTasks = async (req, res) => {
     try {
+        
         if (!mongoose.Types.ObjectId.isValid(req.params.userId)) throw {//User id who opened the tasks
             status: httpStatus.BAD_REQUEST, message: 'Invalid user id number'
         }
-        if (!mongoose.Types.ObjectId.isValid(req.params.resturant)) throw {//tasks within the resturant
-            status: httpStatus.BAD_REQUEST, message: 'Invalid resturant id number'
-        }
         userObj = await User.find({ _id: req.params.userId }, (err) => { if (err) throw err });
+        console.log(userObj[0].Role)
         if (userObj.length == 0) throw {
-            status: httpStatus.BAD_REQUEST, message: 'No such tasks'
+            status: httpStatus.BAD_REQUEST, message: 'No such user'
         }
-        if(!req.params.resturant) throw { status: httpStatus.BAD_REQUEST, message: 'resturant id can not be empty'
-    }
         if (userObj[0].Role == 'Resturant Manager') {
+            if(!req.params.resturant) throw { status: httpStatus.BAD_REQUEST, message: 'resturant id can not be empty'}
             taskObj = await Task.find({}, (err) => {
                 if (err) throw { status: httpStatus.INTERNAL_SERVER_ERROR }
             }).where('StatusManager').equals(req.params.status).where('Resturant').equals(req.params.resturant);
@@ -91,6 +89,7 @@ const viewAllTasks = async (req, res) => {
             res.status(httpStatus.OK).send(JSON.stringify(taskObj));
         }
         else if (userObj[0].Role == 'Technician') {
+            if(!req.params.status){
             taskObj = await Task.find({}, (err) => {
                 if (err) throw { status: httpStatus.INTERNAL_SERVER_ERROR }
             }).where('Date').equals(req.params.date);
@@ -99,8 +98,18 @@ const viewAllTasks = async (req, res) => {
             }
             res.status(httpStatus.OK).send(JSON.stringify(taskObj));
         }
+        else{
+        taskObj = await Task.find({}, (err) => {
+            if (err) throw { status: httpStatus.INTERNAL_SERVER_ERROR }
+        }).where('FixNow').equals('true');
+        if (taskObj.length == 0) throw {
+            status: httpStatus.BAD_REQUEST, message: `There are no tasks on the ${req.params.date}`
+        }
+        res.status(httpStatus.OK).send(JSON.stringify(taskObj));
+    }
+    }
         else if (userObj[0].Role == 'Manager') throw {
-            status: httpStatus.BAD_REQUEST, message: 'Manager is not autherized for this information'
+            status: httpStatus.BAD_REQUEST, message: 'Manager is not autoherized for this information'
         }
         else {//Open only for system manager
             obj = await Task.find({}, (err) => {

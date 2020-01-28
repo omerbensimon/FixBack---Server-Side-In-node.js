@@ -23,7 +23,5 @@ router.get('/GetAllAvailibleTech', (req, res) => {
 router.put('/UpdateStatus/:id', (req,res) => {
     UserController.updateStatus(req,res)
 });
-// router.all('*', (req, res) => {
-//     res.status(err.status).send("The rout isn't avilable..")
-// })
+
 module.exports = router;

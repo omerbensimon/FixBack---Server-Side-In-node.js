@@ -24,7 +24,7 @@ const viewSingleResturant = async (req, res) => {
         }
         obj = await Resturant.find({ _id: req.params.id }, (err) => { if (err) throw err });
         if (obj.length == 0) throw {
-            status: httpStatus.BAD_REQUEST, message: 'No such movie'
+            status: httpStatus.BAD_REQUEST, message: 'No such resturant'
         }
         res.status(httpStatus.OK).json(obj[0]);
     } catch (err) {
@@ -50,7 +50,7 @@ const deleteResturant = async (req, res) => {
 
 const addResturant= async(req, res)=> {
     try {
-     //   pos=Location.GetLocationByAddress(req,res) //Optional- API that sets address using address pharse
+     // Location.GetLocationByAddress(req,res) //Optional- API that sets address using address pharse
         if (!req.body.name || !req.body.address ) throw { status: httpStatus.BAD_REQUEST, message: 'invalid variables' };
         obj = Resturant({
             name: req.body.name,

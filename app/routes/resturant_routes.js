@@ -16,7 +16,5 @@ router.delete('/deleteResturant/:id', (req, res) => {
     ResturantController.deleteResturant(req, res)
 });
 
-// router.all('*', (req, res) => {
-//     res.status(err.status).send('The rout is not avilalble..')
-// })
+
 module.exports = router;
